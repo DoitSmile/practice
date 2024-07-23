@@ -1,6 +1,6 @@
 import { CreateProductInput } from '../dto/create-product.input';
 import { UpdateProductsInput } from '../dto/update-product.input';
-import { Product } from '../entites/product.entity';
+import { Product } from '../entities/product.entity';
 
 export interface IProductServiceCreate {
   createProductInput: CreateProductInput;

@@ -2,29 +2,32 @@
 
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './apis/products/entites/product.entity';
 import { ProductsModule } from './apis/products/products.module';
-import { ProductSaleslocation } from './apis/productSaleslocation/entities/productSaleslocation.entity';
+import { UsersModule } from './apis/users/user.module';
 
 @Module({
   imports: [
+    UsersModule,
     ProductsModule,
+    ConfigModule.forRoot(), //.env를 위해
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
+      context: ({ req, res }) => ({ req, res }), // 기본적으로 req는 들어오지만 res는 이 작업이 필요
     }),
     TypeOrmModule.forRoot({
-      type: 'mysql', // 데이터 베이스 타입
-      host: 'localhost', // local 환경으로 진행
-      port: 3306, // mysql은 기본 port는 3306
-      username: 'root', // mysql은 기본 user는 root로 지정
-      password: '12345678', // 본인의 mysql password
-      database: 'mysqlpractice', // 연결할 데이터 베이스명
-      entities: [Product, ProductSaleslocation], // 데이터 베이스와 연결할 entity
-      synchronize: true, // entity 테이블을 데이터베이스와 동기화할 것인지
-      logging: true, // 콘솔 창에 log를 표시할 것인지
+      type: process.env.DATABASE_TYPE as 'mysql',
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT),
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_DATABASE,
+      entities: [__dirname + '/apis/**/*.entity.*'], //현재 파일이 있는 절대경로에서 apis 폴더 안에 끝까지 들어가서,  파일명 중간에 .entity.이 들어간 파일들을 선택한다는 뜻
+      synchronize: true,
+      logging: true,
     }),
   ],
 })

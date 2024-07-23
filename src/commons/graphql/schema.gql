@@ -25,12 +25,20 @@ type Product {
   productSaleslocation: ProductSaleslocation!
 }
 
+type User {
+  id: String!
+  name: String!
+  email: String!
+  age: Int!
+}
+
 type Query {
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
 }
 
 type Mutation {
+  createUser(name: String!, password: String!, age: Float!, email: String!): User!
   createProducts(createProductInput: CreateProductInput!): Product!
   updateProducts(productId: String!, updateProductsInput: UpdateProductsInput!): Product!
   deleteProduct(productId: String!): Boolean!
